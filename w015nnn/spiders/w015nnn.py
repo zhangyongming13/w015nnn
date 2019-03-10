@@ -37,6 +37,7 @@ class W015nnn(scrapy.Spider):
             item['tiezi_name'] = each.xpath("./li[@class='name']/a/text()").extract()[0]
             if Redis.sismember(collectionname, item['tiezi_link']):
                 print('帖子%s已爬取，跳过！' % item['tiezi_name'])
+                time.sleep(1)
                 continue
             item['tiezi_date'] = each.xpath("./li[@class='time']/font/text() | ./li[@class='time']/text()").extract()[0]
             time.sleep(8 + random.randint(2, 5))
