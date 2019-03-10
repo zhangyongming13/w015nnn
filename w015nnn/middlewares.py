@@ -10,15 +10,15 @@ import redis
 collectionname = '75aeae'
 
 
-class IngoreRequestMiddleware(object):
-    def __init__(self):
-        self.Redis = redis.Redis(host='192.168.1.247',port=6379,db=1)
-
-    def process_request(self, request, spider):
-        if self.Redis.sismember(collectionname, request.url):
-            raise IgnoreRequest("IgnoreRequest : %s" % request.url)
-        else:
-            return None
+# class IngoreRequestMiddleware(object):
+#     def __init__(self):
+#         self.Redis = redis.Redis(host='192.168.1.247',port=6379,db=1)
+#
+#     def process_request(self, request, spider):
+#         if self.Redis.sismember(collectionname, request.url):
+#             raise IgnoreRequest("IgnoreRequest : %s" % request.url)
+#         else:
+#             return None
 
 
 class W015NnnSpiderMiddleware(object):
