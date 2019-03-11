@@ -3,7 +3,7 @@ from w015nnn.items import W015NnnItem
 from w015nnn.settings import DEFAULT_REQUEST_HEADERS
 
 
-url = ['http://www.80aeae.com/artlist/23.html']
+url = ['http://www.80aeae.com/artlist/27.html']
 collectionname = '75aeae'
 
 
@@ -24,21 +24,27 @@ class MyThread(threading.Thread):  # 类继承多线程的方法threading.Thread
 
 class W015nnn(scrapy.Spider):
     name = '75aeae'
-    start_urls = ['http://www.80aeae.com/artlist/23.html']
+    start_urls = ['http://www.80aeae.com/artlist/27.html']
     url_init = 'http://www.80aeae.com'
+    url_init_75 = 'http://www.75aeae.com'
     next = '下一页'
 
     def parse(self, response):
         data = response.xpath("//div[@class='atrlist']/ul")
-        Redis = redis.Redis(host='192.168.1.247', port=6379, db=1)
+        Redis = redis.Redis(host='192.168.1.247', port=6379, db=0)  # 初始化redis链接
         for each in data:  # 得到链接内所有帖子的链接和名字
             item = W015NnnItem()
-            item['tiezi_link'] = self.url_init + each.xpath("./li[@class='name']/a/@href").extract()[0]
+            item['tiezi_link'] = each.xpath("./li[@class='name']/a/@href").extract()[0]
             item['tiezi_name'] = each.xpath("./li[@class='name']/a/text()").extract()[0]
-            if Redis.sismember(collectionname, item['tiezi_link']):
+            if Redis.sismember(collectionname, self.url_init + item['tiezi_link']):  # 判断帖子链接已经在redis中，如果有直接跳过
                 print('帖子%s已爬取，跳过！' % item['tiezi_name'])
                 time.sleep(1)
                 continue
+            if Redis.sismember(collectionname, self.url_init_75 + item['tiezi_link']):
+                print('帖子%s已爬取，跳过！' % item['tiezi_name'])
+                time.sleep(1)
+                continue
+            item['tiezi_link'] = self.url_init + item['tiezi_link']
             item['tiezi_date'] = each.xpath("./li[@class='time']/font/text() | ./li[@class='time']/text()").extract()[0]
             time.sleep(8 + random.randint(2, 5))
             tiezi_data = scrapy.Request(item['tiezi_link'], meta={'item': item}, callback=self.get_tupian_link)
