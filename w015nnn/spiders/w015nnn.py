@@ -1,10 +1,9 @@
 import scrapy, time, random, threading, requests, redis
 from w015nnn.items import W015NnnItem
-from w015nnn.settings import DEFAULT_REQUEST_HEADERS
+from w015nnn.settings import DEFAULT_REQUEST_HEADERS,collectionname
 
 
-url = ['http://www.80aeae.com/artlist/27.html']
-collectionname = '75aeae'
+url = ['http://85vovo.com/artlist/23.html']
 
 
 class MyThread(threading.Thread):  # 类继承多线程的方法threading.Thread，并加入返回数据的方法
@@ -24,14 +23,17 @@ class MyThread(threading.Thread):  # 类继承多线程的方法threading.Thread
 
 class W015nnn(scrapy.Spider):
     name = '75aeae'
-    start_urls = ['http://www.80aeae.com/artlist/27.html']
-    url_init = 'http://www.80aeae.com'
+    start_urls = ['http://www.85vovo.com/artlist/23.html']
+    url_init = 'http://www.85vovo.com'
     url_init_75 = 'http://www.75aeae.com'
     next = '下一页'
 
     def parse(self, response):
         data = response.xpath("//div[@class='atrlist']/ul")
-        Redis = redis.Redis(host='192.168.1.247', port=6379, db=0)  # 初始化redis链接
+        try:
+            Redis = redis.Redis(host='192.168.1.247', port=6379, db=0)  # 初始化redis链接
+        except:
+            Redis = redis.Redis(host='192.168.1.112', port=6379, db=0)  # 初始化redis链接
         for each in data:  # 得到链接内所有帖子的链接和名字
             item = W015NnnItem()
             item['tiezi_link'] = each.xpath("./li[@class='name']/a/@href").extract()[0]
@@ -46,7 +48,7 @@ class W015nnn(scrapy.Spider):
                 continue
             item['tiezi_link'] = self.url_init + item['tiezi_link']
             item['tiezi_date'] = each.xpath("./li[@class='time']/font/text() | ./li[@class='time']/text()").extract()[0]
-            time.sleep(8 + random.randint(2, 5))
+            time.sleep(6 + random.randint(2, 5))
             tiezi_data = scrapy.Request(item['tiezi_link'], meta={'item': item}, callback=self.get_tupian_link)
             yield tiezi_data  # 提交数据到具体函数
         # 判断下一页
@@ -66,11 +68,11 @@ class W015nnn(scrapy.Spider):
         for each in all_tupian_link:
             link = each.xpath("./@src").extract()[0]
             tupian_link.append(link)
-        item['tupian_link'] = tupian_link
+        item['image_urls'] = tupian_link
         tupian_data = []
         start_time = time.time()
-        self.threding_for_get_tupiandata(item['tiezi_name'], item['tiezi_link'], item['tupian_link'], tupian_data)
-        # self.get_tupian_data(item['tiezi_name'], item['tiezi_link'], item['tupian_link'], tupian_data)
+        self.threding_for_get_tupiandata(item['tiezi_name'], item['tiezi_link'], item['image_urls'], tupian_data)
+        # self.get_tupian_data(item['tiezi_name'], item['tiezi_link'], item['image_urls'], tupian_data)
         print(time.time() - start_time)
         item['tupian_data'] = tupian_data
         yield item

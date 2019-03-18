@@ -26,15 +26,22 @@ DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 }
 
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'
+
 ITEM_PIPELINES = {
-    'w015nnn.pipelines.W015NnnPipeline' : 300,
+    # 'w015nnn.pipelines.ImagePipeline' : 300,
+    'w015nnn.pipelines.W015NnnPipeline' : 301,
     # 'Get_tencent_job_scrapy.pipelines.Mysqlpipeline' : 400
 }
 
+IMAGES_STORE = './images'
+
+collectionname = '85vovo'
+
 MONGODB_HOST = '192.168.1.247'
-MONGODB_DBNAME = '75aeae'
+MONGODB_DBNAME = '85vovo'
 MONGODB_PORT = 27017
-MONGODB_SHEETNAME = '75aeae'
+MONGODB_SHEETNAME = '85vovo'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
