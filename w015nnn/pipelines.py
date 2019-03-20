@@ -53,7 +53,6 @@ class W015NnnPipeline(object):
                 with open('{}//{}.jpg'.format(dir_name, file_name), 'wb') as f:
                     f.write(each)
             print('帖子：%s的图片保存成功' % item['tiezi_name'])
-            item['tupian_data'] = 'Success'
         except Exception as e:
             item['tupian_data'] = 'Fail'
             print('保存到本地失败！')
@@ -61,6 +60,7 @@ class W015NnnPipeline(object):
         try:
             self.Redis.sadd(collectionname, item['tiezi_link'])  # 将已经爬取过的链接插入redis
             print('帖子链接插入Redis成功！')
+            item['tupian_data'] = 'Success'
             return item
         except Exception as e:
             item['tupian_data'] = 'Fail'
