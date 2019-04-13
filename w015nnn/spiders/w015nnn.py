@@ -1,9 +1,9 @@
-import scrapy, time, random, threading, requests, redis
+import scrapy, time, random, threading, requests, redis, re
 from w015nnn.items import W015NnnItem
 from w015nnn.settings import DEFAULT_REQUEST_HEADERS,collectionname
 
 
-url = ['http://85vovo.com/artlist/23.html']
+url = ['http://www.85aeae.com/artlist/27.html']
 
 
 class MyThread(threading.Thread):  # 类继承多线程的方法threading.Thread，并加入返回数据的方法
@@ -22,10 +22,11 @@ class MyThread(threading.Thread):  # 类继承多线程的方法threading.Thread
 
 
 class W015nnn(scrapy.Spider):
+    # www.057nnn.com
     name = '75aeae'
-    start_urls = ['http://www.85vovo.com/artlist/23.html']
-    url_init = 'http://www.85vovo.com'
-    url_init_75 = 'http://www.75aeae.com'
+    start_urls = ['http://www.85aeae.com/artlist/27.html']
+    url_init = 'http://www.85aeae.com'
+    url_init_75 = 'http://www.85aeae.com'
     next = '下一页'
 
     def parse(self, response):
@@ -36,17 +37,17 @@ class W015nnn(scrapy.Spider):
             Redis = redis.Redis(host='192.168.1.112', port=6379, db=0)  # 初始化redis链接
         for each in data:  # 得到链接内所有帖子的链接和名字
             item = W015NnnItem()
-            item['tiezi_link'] = each.xpath("./li[@class='name']/a/@href").extract()[0]
+            item['tiezi_link_postfix'] = each.xpath("./li[@class='name']/a/@href").extract()[0]
             item['tiezi_name'] = each.xpath("./li[@class='name']/a/text()").extract()[0]
-            if Redis.sismember(collectionname, self.url_init + item['tiezi_link']):  # 判断帖子链接已经在redis中，如果有直接跳过
+            if Redis.sismember(collectionname, item['tiezi_link_postfix']):  # 判断帖子链接已经在redis中，如果有直接跳过
                 print('帖子%s已爬取，跳过！' % item['tiezi_name'])
                 time.sleep(1)
                 continue
-            if Redis.sismember(collectionname, self.url_init_75 + item['tiezi_link']):
-                print('帖子%s已爬取，跳过！' % item['tiezi_name'])
-                time.sleep(1)
-                continue
-            item['tiezi_link'] = self.url_init + item['tiezi_link']
+            # if Redis.sismember(collectionname, self.url_init_75 + item['tiezi_link']):
+            #     print('帖子%s已爬取，跳过！' % item['tiezi_name'])
+            #     time.sleep(1)
+            #     continue
+            item['tiezi_link'] = self.url_init + item['tiezi_link_postfix']
             item['tiezi_date'] = each.xpath("./li[@class='time']/font/text() | ./li[@class='time']/text()").extract()[0]
             time.sleep(6 + random.randint(2, 5))
             tiezi_data = scrapy.Request(item['tiezi_link'], meta={'item': item}, callback=self.get_tupian_link)

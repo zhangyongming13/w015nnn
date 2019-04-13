@@ -58,7 +58,7 @@ class W015NnnPipeline(object):
             print('保存到本地失败！')
             print(e)
         try:
-            self.Redis.sadd(collectionname, item['tiezi_link'])  # 将已经爬取过的链接插入redis
+            self.Redis.sadd(collectionname, item['tiezi_link_postfix'])  # 将已经爬取过的链接插入redis
             print('帖子链接插入Redis成功！')
             item['tupian_data'] = 'Success'
             return item

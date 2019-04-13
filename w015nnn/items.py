@@ -13,6 +13,7 @@ class W015NnnItem(scrapy.Item):
     # name = scrapy.Field()
     tiezi_name = scrapy.Field()
     tiezi_link = scrapy.Field()
+    tiezi_link_postfix = scrapy.Field()
     image_urls = scrapy.Field()
     # image_results = scrapy.Field()
     # images = scrapy.Field()
